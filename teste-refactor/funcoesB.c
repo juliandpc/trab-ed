@@ -2,65 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#define TAM 60
-
-
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-////////////// STRUCTS /////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-/*
-//PALAVRA A SER CRIPTOGRAFADA [DESNECESSAURO]
-typedef struct letra{
-    char letra;
-    int nivel;
-    int pagina;
-    int posicao;
-}TLetra;
-*/
-
-//ESTRUTURA DA ARVORE B
-typedef struct ArvB{
-    int nchaves;
-    char folha, *chave;
-    struct ArvB **filho;
-}TAB;
-
-//ESTRUTURA DA ARVORE B+
-typedef struct ArvBM{
-    int nchaves;
-    char folha, *chave;
-    struct ArvBM **filho, *prox;
-}TABM;
-
-//  ^^^^^^ STRUCTS ^^^^^^
-
-
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-///////// FUNCOES DA ARVORE B //////////
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-
-//da vanessa
-/*
-TAB *criaB(int d){
-    TAB* novo = (TAB*)malloc(sizeof(TAB));
-    novo->nchaves = 0;
-    novo->chave =(char*)malloc(sizeof(char*)*(d*2));
-    novo->folha = 1;
-    novo->filho = (TAB**)malloc(sizeof(TAB*)*((d*2)+1));
-    int i;
-    for(i=0; i<((d*2)+1); i++) novo->filho[i] = NULL;
-    return novo;
-}
-*/
+// #include "arvoreB.h"
 
 TAB *criaB(int d){
     TAB* novo = (TAB*)malloc(sizeof(TAB));
@@ -83,7 +25,6 @@ TAB *buscaB(TAB* x, char ch){
     return buscaB(x->filho[i], ch);
 }
 
-
 void imprimeArvB(TAB *a, int andar){
     if(a){
         int i,j;
@@ -95,7 +36,6 @@ void imprimeArvB(TAB *a, int andar){
         imprimeArvB(a->filho[i],andar+1);
     }
 }
-
 
 TAB *divisaoB(TAB *x, int i, TAB* y, int d){
     TAB *z = criaB(d);
@@ -138,7 +78,6 @@ TAB *insere_Nao_Completo(TAB *x, char k, int d){
     x->filho[i] = insere_Nao_Completo(x->filho[i], k, d);
     return x;
 }
-
 
 TAB *insereB(TAB *T, char k, int d){
     if(buscaB(T,k)) return T;
@@ -309,40 +248,9 @@ TAB* retiraB(TAB* arv, char k, int t){
     return removerB(arv, k, t);
 }
 
-/*
-int nivel(node * const root) {
-    int h = 0;
-    node * c = root;
-    while (!c->is_leaf) {
-        c = c->pointers[0];
-        h++;
-    }
-    return h;
-}
-*/
-
 int max(int a, int b){
     return a > b ? a : b;
 }
-
-int nivel(TAB* arv, char ch, int andar){
-    TAB* aux = arv;
-    if(aux){
-        int i;
-        for(i = 0; i <= aux->nchaves-1; i++){
-            printf("chave %c: ", aux->chave[i]);
-            printf("nivel %d\n\n", andar);
-            nivel(aux->filho[i], ch, andar+1);
-
-            //O PRINT FUNCIONA Q EH UMA BELEZA, MAS ESSE IF AQUI NAO NE, VAMOS QUERER
-            //if(ch == aux->chave[i]){
-            //    return andar;
-            //}
-        }
-        nivel(aux->filho[i], ch, andar+1);
-    }
-}
-
 
 int pagina(TAB* arv, char ch, int andar){
     TAB* aux = arv;
@@ -371,177 +279,3 @@ TAB *montaArvoreB(int d, char frase[TAM]){
     return arv;
 }
 
-
-
-//         /FUNCOES DA ARVORE B        //
-
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-///////// FUNCOES DA ARVORE B+ /////////
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-
-void imprimeArvBM(TABM *a, int andar){
-    if(a){
-        int i,j;
-        for(i=0; i<=a->nchaves-1; i++){
-            imprimeArvBM(a->filho[i],andar+1);
-            for(j=0; j<=andar; j++) printf("   ");
-            printf("%c\n", a->chave[i]);
-        }
-        imprimeArvBM(a->filho[i],andar+1);
-    }
-}
-
-
-
-
-//        /FUNCOES DA ARVORE B+        //
-
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-//////////// FUNCOES GERAIS ////////////
-////////////////////////////////////////
-////////////////////////////////////////
-////////////////////////////////////////
-
-char *criaCriptografia(char frase[TAM], int tipoArv, int d){
-    if(tipoArv == 1){
-        TAB *arvB = montaArvoreB(d, frase);
-    }else if(tipoArv == 2){
-
-    }else{
-        return("Tipo de arvore invalida");
-    }
-}
-
-
-
-int main() {
-
-    char frase[TAM];
-    int tipoArv;
-    int d;
-    int tipoInsercao;
-    int acao;
-/*
-    int continuar = 1;
-    while(continuar){
-        printf("Digite a frase que deseja criptografar: \n");
-        scanf("%[^\n]", frase);
-        printf("\n");
-        printf("Qual a ordem (d) da arvore selecionada? \n");
-        scanf("%d", &d);
-        printf("Com que tipo de arvore voce deseja criptografar a mensagem? \n");
-        printf("(1) Arvore B \n");
-        printf("(2) Arvore B+ \n");
-        printf("(0) Sair \n");
-        scanf("%d", &tipoArv);
-        switch(tipoArv){
-            case 1:
-                imprimeArvB(montaArvoreB(d, frase),0);
-                break;
-            case 2:
-                printf("Arvore B+!!! \n\n");
-                break;
-            case 0:
-                continuar = 0;
-                break;
-        }
-        if(continuar == 0){
-            break;
-        }
-        printf("Com a arvore montada e a mensagem criptografada, o que voce deseja fazer agora? \n");
-        printf("(1) Comparar o codigo gerado \n");
-        printf("(2) Buscar informacoes subordinadas \n");
-        printf("(3) Alterar a frequencia de uma letra \n");
-        printf("(4) Buscar todas as letras de uma determinada classificação \n");
-        printf("(5) Remover todas as letras de uma determinada classificação \n");
-        printf("(0) Sair \n");
-        scanf("%d", &acao);
-        if(acao == 0){
-            break;
-        }
-    }
-    printf("esse eh o d: %d", d);
-    printf("essa eh a arvri: %d", tipoArv);
-*/
-
-/*
-    printf("\n");
-    printf("\n");
-    int i = 0;
-    while(frase[i] != '\0'){
-        printf("%c", frase[i]);
-        i++;
-    }
-*/
-    //printf("%s", frase);
-
-
-    TAB* arv = criaB(2);
-
-    /*
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 's', 2);
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'a', 2);
-    arv = insereB(arv, 'n', 2);
-    arv = insereB(arv, 'd', 2);
-    arv = insereB(arv, 'o', 2);
-     */
-    //arv = insereB(arv, 'b', 2);
-    //arv = insereB(arv, 'c', 2);
-    //arv = insereB(arv, 'o', 2);
-
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'h', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 'p', 2);
-    arv = insereB(arv, 'r', 2);
-    arv = insereB(arv, 'o', 2);
-    arv = insereB(arv, 'm', 2);
-    arv = insereB(arv, 'i', 2);
-    arv = insereB(arv, 's', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 'o', 2);
-    arv = insereB(arv, 'f', 2);
-    arv = insereB(arv, 'q', 2);
-    arv = insereB(arv, 'u', 2);
-    arv = insereB(arv, 'a', 2);
-    arv = insereB(arv, 'n', 2);
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'u', 2);
-    arv = insereB(arv, 'm', 2);
-    /*
-    arv = insereB(arv, 'x', 2);
-    arv = insereB(arv, 'w', 2);
-    arv = insereB(arv, 'c', 2);
-    arv = insereB(arv, 'b', 2);
-    arv = insereB(arv, 'd', 2);
-    arv = insereB(arv, 'k', 2);
-    arv = insereB(arv, 'l', 2);
-    arv = insereB(arv, 'r', 2);
-    arv = insereB(arv, 'z', 2);
-    arv = insereB(arv, 'v', 2);
-    */
-
-    imprimeArvB(arv, 0);
-    //int numero = pagina(arv, 'a');
-    //printf("esse numero eh: %d\n", numero);
-
-    char ch = 'm';
-
-    int n = pagina(arv, ch, 0);
-    printf("a posicao na pagina da chave %c eh: %d\n\n", ch, n);
-
-    int n2 = nivel(arv, ch, 0);
-    printf("o nivel da chave %c eh: %d\n", ch, n2);
-
-
-    return 0;
-}
