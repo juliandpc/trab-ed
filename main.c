@@ -309,52 +309,60 @@ TAB* retiraB(TAB* arv, char k, int t){
     return removerB(arv, k, t);
 }
 
-/*
-int nivel(node * const root) {
-    int h = 0;
-    node * c = root;
-    while (!c->is_leaf) {
-        c = c->pointers[0];
-        h++;
-    }
-    return h;
-}
-*/
-
 int max(int a, int b){
     return a > b ? a : b;
+}
+
+int paginaDaqueleNivel(TAB* arv, char ch, int filhos){
+    TAB* aux = arv;
+    if(aux) {
+        int i = 0;
+
+        while(arv->filho[filhos] != NULL){
+            printf("isso eh o q? %c\n", arv->filho[filhos]->chave[0]);
+            while(i < aux->filho[filhos]->nchaves && ch >aux->filho[filhos]->chave[i]){
+
+                if(i < aux->filho[filhos]->nchaves && ch == aux->filho[filhos]->chave[i]){
+                    //printf("ta encontrando!!\n");
+                    return filhos;
+                }
+                i++;
+            }
+
+            //filhos++;
+            return paginaDaqueleNivel(aux, ch, filhos + 1);
+        }
+        //teste++;
+        return paginaDaqueleNivel(aux->filho[i], ch, filhos);
+    }
 }
 
 int nivel(TAB* arv, char ch, int andar){
     TAB* aux = arv;
     if(aux){
-        int i;
-        for(i = 0; i <= aux->nchaves-1; i++){
-            printf("chave %c: ", aux->chave[i]);
-            printf("nivel %d\n\n", andar);
-            nivel(aux->filho[i], ch, andar+1);
-
-            //O PRINT FUNCIONA Q EH UMA BELEZA, MAS ESSE IF AQUI NAO NE, VAMOS QUERER
-            //if(ch == aux->chave[i]){
-            //    return andar;
-            //}
+        int i = 0;
+        while(i < aux->nchaves && ch >aux->chave[i]){
+            i++;
         }
-        nivel(aux->filho[i], ch, andar+1);
+        if(i < aux->nchaves && ch == aux->chave[i]){
+            return andar;
+        }
+
+        return nivel(aux->filho[i], ch, andar+1);
     }
 }
 
-
-int pagina(TAB* arv, char ch, int andar){
+int pagina(TAB* arv, char ch){
     TAB* aux = arv;
     if(aux){
-        int i;
-        for(i = 0; i <= aux->nchaves-1; i++){
-            pagina(aux->filho[i], ch, andar+1);
-            if(aux->chave[i] == ch){
-                return i;
-            }
+        int i = 0;
+        while(i < aux->nchaves && ch >aux->chave[i]){
+            i++;
         }
-        pagina(aux->filho[i], ch, andar+1);
+        if(i < aux->nchaves && ch == aux->chave[i]){
+            return i;
+        }
+        return pagina(aux->filho[i], ch);
     }
 
 }
@@ -430,16 +438,20 @@ int main() {
 /*
     int continuar = 1;
     while(continuar){
+
         printf("Digite a frase que deseja criptografar: \n");
         scanf("%[^\n]", frase);
         printf("\n");
+
         printf("Qual a ordem (d) da arvore selecionada? \n");
         scanf("%d", &d);
+
         printf("Com que tipo de arvore voce deseja criptografar a mensagem? \n");
         printf("(1) Arvore B \n");
         printf("(2) Arvore B+ \n");
         printf("(0) Sair \n");
         scanf("%d", &tipoArv);
+
         switch(tipoArv){
             case 1:
                 imprimeArvB(montaArvoreB(d, frase),0);
@@ -451,9 +463,11 @@ int main() {
                 continuar = 0;
                 break;
         }
+
         if(continuar == 0){
             break;
         }
+
         printf("Com a arvore montada e a mensagem criptografada, o que voce deseja fazer agora? \n");
         printf("(1) Comparar o codigo gerado \n");
         printf("(2) Buscar informacoes subordinadas \n");
@@ -462,10 +476,12 @@ int main() {
         printf("(5) Remover todas as letras de uma determinada classificação \n");
         printf("(0) Sair \n");
         scanf("%d", &acao);
+
         if(acao == 0){
             break;
         }
     }
+
     printf("esse eh o d: %d", d);
     printf("essa eh a arvri: %d", tipoArv);
 */
@@ -478,11 +494,12 @@ int main() {
         printf("%c", frase[i]);
         i++;
     }
+
 */
     //printf("%s", frase);
+    int ordem = 2;
 
-
-    TAB* arv = criaB(2);
+    TAB* arv = criaB(ordem);
 
     /*
     arv = insereB(arv, 't', 2);
@@ -498,25 +515,25 @@ int main() {
     //arv = insereB(arv, 'c', 2);
     //arv = insereB(arv, 'o', 2);
 
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'h', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 'p', 2);
-    arv = insereB(arv, 'r', 2);
-    arv = insereB(arv, 'o', 2);
-    arv = insereB(arv, 'm', 2);
-    arv = insereB(arv, 'i', 2);
-    arv = insereB(arv, 's', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 'o', 2);
-    arv = insereB(arv, 'f', 2);
-    arv = insereB(arv, 'q', 2);
-    arv = insereB(arv, 'u', 2);
-    arv = insereB(arv, 'a', 2);
-    arv = insereB(arv, 'n', 2);
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'u', 2);
-    arv = insereB(arv, 'm', 2);
+    arv = insereB(arv, 't', ordem);
+    arv = insereB(arv, 'h', ordem);
+    arv = insereB(arv, 'e', ordem);
+    arv = insereB(arv, 'p', ordem);
+    arv = insereB(arv, 'r', ordem);
+    arv = insereB(arv, 'o', ordem);
+    arv = insereB(arv, 'm', ordem);
+    arv = insereB(arv, 'i', ordem);
+    arv = insereB(arv, 's', ordem);
+    arv = insereB(arv, 'e', ordem);
+    arv = insereB(arv, 'o', ordem);
+    arv = insereB(arv, 'f', ordem);
+    arv = insereB(arv, 'q', ordem);
+    arv = insereB(arv, 'u', ordem);
+    arv = insereB(arv, 'a', ordem);
+    arv = insereB(arv, 'n', ordem);
+    arv = insereB(arv, 't', ordem);
+    arv = insereB(arv, 'u', ordem);
+    arv = insereB(arv, 'm', ordem);
     /*
     arv = insereB(arv, 'x', 2);
     arv = insereB(arv, 'w', 2);
@@ -534,14 +551,16 @@ int main() {
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
 
-    char ch = 'm';
+    char ch = 's';
 
-    int n = pagina(arv, ch, 0);
-    printf("a posicao na pagina da chave %c eh: %d\n\n", ch, n);
+    int n = pagina(arv, ch);
+    //printf("%d", n);
+    printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, n);
 
     int n2 = nivel(arv, ch, 0);
-    printf("o nivel da chave %c eh: %d\n", ch, n2);
+    printf("o nivel da chave %c eh: %d\n\n", ch, n2);
 
-
+    int x = paginaDaqueleNivel(arv, ch, 0);
+    printf("ta na pagina: %d\n",x);
     return 0;
 }
