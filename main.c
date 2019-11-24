@@ -414,7 +414,7 @@ char* encripta(char letra, TAB* arv, int andar, int pagina) {
     if (arv->filho[0] == NULL) return ""; // Não encontrou a letra (tratar esse caso)
     int i = 0;
     while(i < arv->nchaves && letra > arv->chave[i]) i++;
-    return encripta(letra, arv->filho[i], andar + 1, i);
+    return encripta(letra, arv->filho[i], andar + 1, i + pagina * (andar + 1));
 }
 
 char* encriptaFrase(char* frase, TAB* arv) {
@@ -785,6 +785,8 @@ int main() {
     */
 
     imprimeArvB(arv, 0);
+    char* encriptacao = encriptaFrase("the promise of quantum", arv);
+    printf("Frase: the promise of quantum | encriptado: %s \n", encriptacao);
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
 
@@ -838,9 +840,6 @@ int main() {
 
     int pdNBM = paginaDaqueleNivelBM(arv2, ch, 0);
     printf("a chave >%c< esta na pagina %d\n", ch, pdNBM);
-
-    char* encriptacao = encriptaFrase("The promise", arv);
-    printf("Frase: The promise | encriptado: %s", encriptacao);
 
     return 0;
 }
