@@ -641,6 +641,27 @@ TABM *montaArvoreBM(int d, char frase[TAM]){
     return arv;
 }
 
+char* encriptaBm(char letra, TABM* arv, int andar, int pagina) {
+    if (arv->filho[0]) return encriptaBm(letra, arv->filho[0], andar + 1, 0);
+    for (int i = 0; i < arv->nchaves; i++) {
+        if (letra == arv->chave[i]) {
+            char *encriptacao = encriptaLetra(andar, pagina, i);
+            strcat(encriptacao, " ");
+            return encriptacao;
+        }
+    }
+    if (arv->prox) return encriptaBm(letra, arv->prox, andar, pagina + 1);
+    return "";
+}
+
+char* encriptaFraseBm(char* frase, TABM* arv) {
+    char* encriptacao = malloc(strlen(frase) * 5);
+    for (int i = 0; i < strlen(frase); i++) {
+        strcat(encriptacao, encriptaBm(frase[i], arv, 0, 0));
+    }
+    return encriptacao;
+}
+
 //        /FUNCOES DA ARVORE B+        //
 
 ////////////////////////////////////////
@@ -831,6 +852,11 @@ int main() {
     arv2 = insereBM(arv2, 'm', ordem);
 
     imprimeArvBM(arv2, 0);
+    printTest(arv2, 0);
+    printf("\n");
+
+    char* encriptacaoBm = encriptaFraseBm("the promise of quantum", arv2);
+    printf("Frase: the promise of quantum | encriptado: %s \n", encriptacaoBm);
 
     int pBM = paginaBM(arv2, ch);
     printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, pBM);
