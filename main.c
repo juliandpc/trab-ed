@@ -391,6 +391,39 @@ TAB *montaArvoreB(int d, char frase[TAM]){
     return arv;
 }
 
+char* encriptaLetra(int andar, int pagina, int posicao) {
+    char* encriptacao = malloc(5);
+    char castado[12];
+    sprintf(castado, "%d", andar);
+    strcat(encriptacao, castado);
+    sprintf(castado, "%d", pagina);
+    if (andar != 0) strcat(encriptacao, castado);
+    sprintf(castado, "%d", posicao);
+    strcat(encriptacao, castado);
+    return encriptacao;
+}
+
+char* encripta(char letra, TAB* arv, int andar, int pagina) {
+    for (int j = 0; j < arv->nchaves; j++) {
+        if (letra == arv->chave[j]) {
+            char *encriptacao = encriptaLetra(andar, pagina, j);
+            strcat(encriptacao, " ");
+            return encriptacao;
+        }
+    }
+    if (arv->filho[0] == NULL) return ""; // Não encontrou a letra (tratar esse caso)
+    int i = 0;
+    while(i < arv->nchaves && letra > arv->chave[i]) i++;
+    return encripta(letra, arv->filho[i], andar + 1, i + pagina * (andar + 1));
+}
+
+char* encriptaFrase(char* frase, TAB* arv) {
+    char* encriptacao = malloc(strlen(frase) * 5);
+    for (int i = 0; i < strlen(frase); i++) {
+        strcat(encriptacao, encripta(frase[i], arv, 0, 0));
+    }
+    return encriptacao;
+} 
 
 
 //         /FUNCOES DA ARVORE B        //
@@ -752,6 +785,8 @@ int main() {
     */
 
     imprimeArvB(arv, 0);
+    char* encriptacao = encriptaFrase("the promise of quantum", arv);
+    printf("Frase: the promise of quantum | encriptado: %s \n", encriptacao);
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
 
