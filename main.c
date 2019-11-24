@@ -13,15 +13,6 @@
 ////////////////////////////////////////
 ////////////////////////////////////////
 ////////////////////////////////////////
-/*
-//PALAVRA A SER CRIPTOGRAFADA [DESNECESSAURO]
-typedef struct letra{
-    char letra;
-    int nivel;
-    int pagina;
-    int posicao;
-}TLetra;
-*/
 
 //ESTRUTURA DA ARVORE B
 typedef struct ArvB{
@@ -89,7 +80,7 @@ void imprimeArvB(TAB *a, int andar){
         int i,j;
         for(i=0; i<=a->nchaves-1; i++){
             imprimeArvB(a->filho[i],andar+1);
-            for(j=0; j<=andar; j++) printf("   ");
+            for(j=0; j<=andar; j++) printf("---");
             printf("%c\n", a->chave[i]);
         }
         imprimeArvB(a->filho[i],andar+1);
@@ -313,31 +304,8 @@ int max(int a, int b){
     return a > b ? a : b;
 }
 
-int paginaDaqueleNivel(TAB* arv, char ch, int filhos){
-    TAB* aux = arv;
-    if(aux) {
-        int i = 0;
 
-        while(arv->filho[filhos] != NULL){
-            printf("isso eh o q? %c\n", arv->filho[filhos]->chave[0]);
-            while(i < aux->filho[filhos]->nchaves && ch >aux->filho[filhos]->chave[i]){
-
-                if(i < aux->filho[filhos]->nchaves && ch == aux->filho[filhos]->chave[i]){
-                    //printf("ta encontrando!!\n");
-                    return filhos;
-                }
-                i++;
-            }
-
-            //filhos++;
-            return paginaDaqueleNivel(aux, ch, filhos + 1);
-        }
-        //teste++;
-        return paginaDaqueleNivel(aux->filho[i], ch, filhos);
-    }
-}
-
-int nivel(TAB* arv, char ch, int andar){
+int nivelB(TAB* arv, char ch, int andar){
     TAB* aux = arv;
     if(aux){
         int i = 0;
@@ -348,11 +316,28 @@ int nivel(TAB* arv, char ch, int andar){
             return andar;
         }
 
-        return nivel(aux->filho[i], ch, andar+1);
+        return nivelB(aux->filho[i], ch, andar+1);
     }
 }
 
-int pagina(TAB* arv, char ch){
+/*
+int paginaDaqueleNivelB(TAB* arv, char ch, int andar){
+    TAB* aux = arv;
+
+    if(aux){
+        int j = 0;
+        while(aux->filho[j] != NULL){
+            j++;
+        }
+        printf("a chave %c tem %d filhos\n", aux->chave[0], j);
+
+        return paginaDaqueleNivelB(arv->filho[0], ch, andar+1);
+    }
+
+}
+*/
+
+int paginaB(TAB* arv, char ch){
     TAB* aux = arv;
     if(aux){
         int i = 0;
@@ -362,9 +347,36 @@ int pagina(TAB* arv, char ch){
         if(i < aux->nchaves && ch == aux->chave[i]){
             return i;
         }
-        return pagina(aux->filho[i], ch);
+        return paginaB(aux->filho[i], ch);
     }
 
+}
+
+int paiDaChave(TAB* arv, char ch, int andar, int nivelPai){
+    TAB* aux = arv;
+    if(aux){
+        int i = 0;
+        while(i < aux->nchaves && ch > aux->chave[i]){
+            printf("aux %c\n", aux->chave[i]);
+            i++;
+        }
+        if(i < aux->nchaves && ch == aux->chave[i]){
+            printf("BLABLABLA %c\n", aux->chave[i]);
+            printf("i:  %d\n", i);
+
+            printf("PAGIUNA PAI: %d\n", nivelPai);
+            return nivelPai;
+        }
+        printf("PAGIUNA PAI: %d\n", i);
+        nivelPai = i;
+        return paiDaChave(aux->filho[i], ch, andar+1, nivelPai);
+    }
+}
+
+int paginaDaqueleNivelB(TAB* arv, char ch){
+    int paginaPai;
+    paginaPai = paiDaChave(arv, ch, 0, 0);
+    return paginaPai;
 }
 
 
@@ -391,20 +403,210 @@ TAB *montaArvoreB(int d, char frase[TAM]){
 ////////////////////////////////////////
 ////////////////////////////////////////
 
+TABM *criaBM(int d){
+    TABM* novo = (TABM*)malloc(sizeof(TABM));
+    novo->nchaves = 0;
+    novo->chave =(char*)malloc(sizeof(char)*((d*2)-1));
+    novo->folha = 1;
+    novo->filho = (TABM**)malloc(sizeof(TABM*)*d*2);
+    novo->prox = NULL;
+    int i;
+    for(i=0; i<(d*2); i++) novo->filho[i] = NULL;
+    return novo;
+}
+
+
 void imprimeArvBM(TABM *a, int andar){
     if(a){
         int i,j;
         for(i=0; i<=a->nchaves-1; i++){
             imprimeArvBM(a->filho[i],andar+1);
-            for(j=0; j<=andar; j++) printf("   ");
+            for(j=0; j<=andar; j++) printf("---");
             printf("%c\n", a->chave[i]);
         }
         imprimeArvBM(a->filho[i],andar+1);
     }
 }
 
+TABM *buscaBM(TABM *a, char mat){
+    if (!a) return NULL;
+    int i = 0;
+    while ((i < a->nchaves) && (mat > a->chave[i])) i++;
+    if ((i < a->nchaves) && (a->folha) && (mat == a->chave[i])) return a;
+    if (a-> folha) return NULL;
+    if (a->chave[i] == mat) i++;
+    return buscaBM(a->filho[i], mat);
+}
+
+TABM *divisaoBM(TABM *x, int i, TABM* y, int d){
+    TABM *z = criaBM(d);
+    z->folha = y->folha;
+    int j;
+    if(!y->folha){
+        z->nchaves = d-1;
+        for(j=0;j<d-1;j++) z->chave[j] = y->chave[j+d];
+        for(j=0;j<d;j++){
+            z->filho[j] = y->filho[j+d];
+            y->filho[j+d] = NULL;
+        }
+    }
+    else {
+        z->nchaves = d; //z possuir� uma chave a mais que y se for folha
+        for(j=0;j < d;j++) z->chave[j] = y->chave[j+d-1];//Caso em que y � folha, temos q passar a info para o n� da direita
+        y->prox = z;
+    }
+    y->nchaves = d-1;
+    for(j=x->nchaves; j>=i; j--) x->filho[j+1]=x->filho[j];
+    x->filho[i] = z;
+    for(j=x->nchaves; j>=i; j--) x->chave[j] = x->chave[j-1];
+    x->chave[i-1] = y->chave[d-1];
+    x->nchaves++;
+    return x;
+}
 
 
+TABM *insere_nao_completoBM(TABM *x, char mat, int d){
+    int i = x->nchaves-1;
+    if(x->folha){
+        while((i>=0) && (mat < x->chave[i])){
+            x->chave[i+1] = x->chave[i];
+            i--;
+        }
+        x->chave[i+1] = mat;
+        x->nchaves++;
+        return x;
+    }
+    while((i>=0) && (mat < x->chave[i])) i--;
+    i++;
+    if(x->filho[i]->nchaves == ((2*d)-1)){
+        x = divisaoBM(x, (i+1), x->filho[i], d);
+        if(mat > x->chave[i]) i++;
+    }
+    x->filho[i] = insere_nao_completoBM(x->filho[i], mat, d);
+    return x;
+}
+
+TABM *insereBM(TABM *T, char mat, int t){
+    if(buscaBM(T, mat)) return T;
+    if(!T){
+        T=criaBM(t);
+        T->chave[0] = mat;
+        T->nchaves=1;
+        return T;
+    }
+    if(T->nchaves == (2*t)-1){
+        TABM *S = criaBM(t);
+        S->nchaves=0;
+        S->folha = 0;
+        S->filho[0] = T;
+        S = divisaoBM(S,1,T,t);
+        S = insere_nao_completoBM(S, mat, t);
+        return S;
+    }
+    T = insere_nao_completoBM(T, mat, t);
+    return T;
+}
+
+int paginaBM(TABM* arv, char ch){
+    TABM* aux = arv;
+    if(aux){
+        int i = 0;
+        while(i < aux->nchaves && ch >aux->chave[i]){
+            i++;
+        }
+        if(i < aux->nchaves && (aux->folha) && ch == aux->chave[i]){
+            return i;
+        }
+        if (aux->chave[i] == ch){
+            i++;
+        }
+        return paginaBM(aux->filho[i], ch);
+    }
+
+}
+
+int nivelBM(TABM* arv, char ch, int andar){
+    TABM* aux = arv;
+    if(aux){
+        int i = 0;
+        while(i < aux->nchaves && ch >aux->chave[i]){
+            i++;
+        }
+        if(i < aux->nchaves && (aux->folha) && ch == aux->chave[i]){
+            return andar;
+        }
+        if (aux->chave[i] == ch){
+            i++;
+        }
+        return nivelBM(aux->filho[i], ch, andar+1);
+    }
+}
+/*
+int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
+    TABM* aux = arv;
+    if(aux->folha){
+        int j = 0;
+        while(aux != NULL){
+            printf("esse eh o noh folha numero %d\n", j);
+            j++;
+            aux = aux->prox->folha;
+        }
+        //return j;
+    }else{
+        return paginaDaqueleNivelBM(aux->filho[0], ch, pos);
+    }
+}
+*/
+
+int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
+    //TABM* aux = arv;
+    TABM* noPai;
+    if(arv->folha){
+        int i = 0;
+        while((i < arv->nchaves) && (ch > arv->chave[i])){
+            printf("aqui tem q ser o %c\n", arv->chave[i]);
+            i++;
+        }
+        if(i < arv->nchaves && ch == arv->chave[i]){
+            return pos;
+        }
+        if (arv->chave[i] == ch){
+            i++;
+        }
+        if(arv->prox != NULL){
+            return paginaDaqueleNivelBM(arv->prox, ch, pos + 1);
+        }else{
+            return paginaDaqueleNivelBM(noPai->filho[i], ch, pos + 1);
+        }
+    }else{
+        noPai = arv;
+        return paginaDaqueleNivelBM(arv->filho[0], ch, pos);
+    }
+}
+
+
+/*
+TABM *buscaBM(TABM *a, char mat){
+    if (!a) return NULL;
+    int i = 0;
+    while ((i < a->nchaves) && (mat > a->chave[i])) i++;
+    if ((i < a->nchaves) && (a->folha) && (mat == a->chave[i])) return a;
+    if (a-> folha) return NULL;
+    if (a->chave[i] == mat) i++;
+    return buscaBM(a->filho[i], mat);
+}
+*/
+
+TABM *montaArvoreBM(int d, char frase[TAM]){
+    TABM* arv = criaBM(d);
+    int i = 0;
+    while(frase[i] != '\0'){
+        arv = insereBM(arv, frase[i], d);
+        i++;
+    }
+
+    return arv;
+}
 
 //        /FUNCOES DA ARVORE B+        //
 
@@ -420,7 +622,7 @@ char *criaCriptografia(char frase[TAM], int tipoArv, int d){
     if(tipoArv == 1){
         TAB *arvB = montaArvoreB(d, frase);
     }else if(tipoArv == 2){
-
+        TABM *arvBM = montaArvoreBM(d, frase);
     }else{
         return("Tipo de arvore invalida");
     }
@@ -501,6 +703,7 @@ int main() {
 
     TAB* arv = criaB(ordem);
 
+
     /*
     arv = insereB(arv, 't', 2);
     arv = insereB(arv, 'e', 2);
@@ -534,33 +737,74 @@ int main() {
     arv = insereB(arv, 't', ordem);
     arv = insereB(arv, 'u', ordem);
     arv = insereB(arv, 'm', ordem);
+
     /*
-    arv = insereB(arv, 'x', 2);
-    arv = insereB(arv, 'w', 2);
-    arv = insereB(arv, 'c', 2);
-    arv = insereB(arv, 'b', 2);
-    arv = insereB(arv, 'd', 2);
-    arv = insereB(arv, 'k', 2);
-    arv = insereB(arv, 'l', 2);
-    arv = insereB(arv, 'r', 2);
-    arv = insereB(arv, 'z', 2);
-    arv = insereB(arv, 'v', 2);
+    arv = insereB(arv, 'x', ordem);
+    arv = insereB(arv, 'w',ordem);
+    arv = insereB(arv, 'c', ordem);
+    arv = insereB(arv, 'b', ordem);
+    arv = insereB(arv, 'd', ordem);
+    arv = insereB(arv, 'k', ordem);
+    arv = insereB(arv, 'l', ordem);
+    arv = insereB(arv, 'r', ordem);
+    arv = insereB(arv, 'z', ordem);
+    arv = insereB(arv, 'v', ordem);
     */
 
     imprimeArvB(arv, 0);
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
 
-    char ch = 's';
+    char ch = 'r';
 
-    int n = pagina(arv, ch);
+    int n = paginaB(arv, ch);
     //printf("%d", n);
     printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, n);
 
-    int n2 = nivel(arv, ch, 0);
+    int n2 = nivelB(arv, ch, 0);
     printf("o nivel da chave %c eh: %d\n\n", ch, n2);
 
-    int x = paginaDaqueleNivel(arv, ch, 0);
-    printf("ta na pagina: %d\n",x);
+    int x = paginaDaqueleNivelB(arv, ch);
+    printf("ta na pagina %d do %d nivel\n\n", x, n2);
+
+    TAB *excluida = retiraB(arv, 'h', 0);
+    imprimeArvB(excluida, 0);
+
+    printf("\n\n\n\n");
+    printf("---- ARVORE B+ ----\n\n");
+
+    TABM* arv2 = criaBM(ordem);
+
+    arv2 = insereBM(arv2, 't', ordem);
+    arv2 = insereBM(arv2, 'h', ordem);
+    arv2 = insereBM(arv2, 'e', ordem);
+    arv2 = insereBM(arv2, 'p', ordem);
+    arv2 = insereBM(arv2, 'r', ordem);
+    arv2 = insereBM(arv2, 'o', ordem);
+    arv2 = insereBM(arv2, 'm', ordem);
+    arv2 = insereBM(arv2, 'i', ordem);
+    arv2 = insereBM(arv2, 's', ordem);
+    arv2 = insereBM(arv2, 'e', ordem);
+    arv2 = insereBM(arv2, 'o', ordem);
+    arv2 = insereBM(arv2, 'f', ordem);
+    arv2 = insereBM(arv2, 'q', ordem);
+    arv2 = insereBM(arv2, 'u', ordem);
+    arv2 = insereBM(arv2, 'a', ordem);
+    arv2 = insereBM(arv2, 'n', ordem);
+    arv2 = insereBM(arv2, 't', ordem);
+    arv2 = insereBM(arv2, 'u', ordem);
+    arv2 = insereBM(arv2, 'm', ordem);
+
+    imprimeArvBM(arv2, 0);
+
+    int pBM = paginaBM(arv2, ch);
+    printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, pBM);
+
+    int nBM = nivelBM(arv2, ch, 0);
+    printf("a chave >%c< esta no nivel %d\n\n", ch, nBM);
+
+    int pdNBM = paginaDaqueleNivelBM(arv2, ch, 0);
+    printf("a chave >%c< esta na pagina %d\n", ch, pdNBM);
+
     return 0;
 }
