@@ -403,10 +403,24 @@ char* encriptaLetra(int andar, int pagina, int posicao) {
     return encriptacao;
 }
 
-char* encripta(char letra, TAB* arv, int andar, int pagina) {
+int calculaPagina(TAB* arv, char letra, int pagina, int andarAtual, int andar) {
+    for (int j = 0; j < arv->nchaves; j++) {
+        if (letra == arv->chave[j])
+            return pagina;
+    }
+    if (andarAtual == andar) return pagina + 1;
+    for (int i = 0; i <= arv->nchaves; i++) {
+        int temp = pagina;
+        pagina = calculaPagina(arv->filho[i], letra, pagina, andarAtual + 1, andar);
+        if (pagina == temp) break;
+    }
+    return pagina;
+}
+
+char* encripta(char letra, TAB* arv, int andar, TAB* raiz) {
     for (int j = 0; j < arv->nchaves; j++) {
         if (letra == arv->chave[j]) {
-            char *encriptacao = encriptaLetra(andar, pagina, j);
+            char *encriptacao = encriptaLetra(andar, calculaPagina(raiz, letra, 0, 0, andar), j);
             strcat(encriptacao, " ");
             return encriptacao;
         }
@@ -414,13 +428,13 @@ char* encripta(char letra, TAB* arv, int andar, int pagina) {
     if (arv->filho[0] == NULL) return ""; // Não encontrou a letra (tratar esse caso)
     int i = 0;
     while(i < arv->nchaves && letra > arv->chave[i]) i++;
-    return encripta(letra, arv->filho[i], andar + 1, i + pagina * (andar + 1));
+    return encripta(letra, arv->filho[i], andar + 1, raiz);
 }
 
 char* encriptaFrase(char* frase, TAB* arv) {
     char* encriptacao = malloc(strlen(frase) * 5);
     for (int i = 0; i < strlen(frase); i++) {
-        strcat(encriptacao, encripta(frase[i], arv, 0, 0));
+        strcat(encriptacao, encripta(frase[i], arv, 0, arv));
     }
     return encriptacao;
 } 
