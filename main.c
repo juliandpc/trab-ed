@@ -39,20 +39,6 @@ typedef struct ArvBM{
 ////////////////////////////////////////
 ////////////////////////////////////////
 
-//da vanessa
-/*
-TAB *criaB(int d){
-    TAB* novo = (TAB*)malloc(sizeof(TAB));
-    novo->nchaves = 0;
-    novo->chave =(char*)malloc(sizeof(char*)*(d*2));
-    novo->folha = 1;
-    novo->filho = (TAB**)malloc(sizeof(TAB*)*((d*2)+1));
-    int i;
-    for(i=0; i<((d*2)+1); i++) novo->filho[i] = NULL;
-    return novo;
-}
-*/
-
 TAB *criaB(int d){
     TAB* novo = (TAB*)malloc(sizeof(TAB));
     novo->nchaves = 0;
@@ -406,12 +392,13 @@ char* encriptaLetra(int andar, int pagina, int posicao) {
 int calculaPagina(TAB* arv, char letra, int pagina, int andarAtual, int andar) {
     for (int j = 0; j < arv->nchaves; j++) {
         if (letra == arv->chave[j])
-            return -pagina;
+            return pagina;
     }
     if (andarAtual == andar) return pagina + 1;
     for (int i = 0; i <= arv->nchaves; i++) {
+        int temp = pagina;
         pagina = calculaPagina(arv->filho[i], letra, pagina, andarAtual + 1, andar);
-        if (pagina < 0) break;
+        if (pagina == temp) break;
     }
     return pagina;
 }
@@ -419,8 +406,7 @@ int calculaPagina(TAB* arv, char letra, int pagina, int andarAtual, int andar) {
 char* encripta(char letra, TAB* arv, int andar, TAB* raiz) {
     for (int j = 0; j < arv->nchaves; j++) {
         if (letra == arv->chave[j]) {
-            int pagina = -calculaPagina(raiz, letra, 0, 0, andar);
-            char *encriptacao = encriptaLetra(andar, pagina, j);
+            char *encriptacao = encriptaLetra(andar, calculaPagina(raiz, letra, 0, 0, andar), j);
             strcat(encriptacao, " ");
             return encriptacao;
         }
@@ -588,22 +574,6 @@ int nivelBM(TABM* arv, char ch, int andar){
         return nivelBM(aux->filho[i], ch, andar+1);
     }
 }
-/*
-int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
-    TABM* aux = arv;
-    if(aux->folha){
-        int j = 0;
-        while(aux != NULL){
-            printf("esse eh o noh folha numero %d\n", j);
-            j++;
-            aux = aux->prox->folha;
-        }
-        //return j;
-    }else{
-        return paginaDaqueleNivelBM(aux->filho[0], ch, pos);
-    }
-}
-*/
 
 int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
     //TABM* aux = arv;
@@ -655,8 +625,8 @@ TABM *montaArvoreBM(int d, char frase[TAM]){
     return arv;
 }
 
-char* encriptaBm(char letra, TABM* arv, int andar, int pagina) {
-    if (arv->filho[0]) return encriptaBm(letra, arv->filho[0], andar + 1, 0);
+char* encriptaBM(char letra, TABM* arv, int andar, int pagina) {
+    if (arv->filho[0]) return encriptaBM(letra, arv->filho[0], andar + 1, 0);
     for (int i = 0; i < arv->nchaves; i++) {
         if (letra == arv->chave[i]) {
             char *encriptacao = encriptaLetra(andar, pagina, i);
@@ -664,14 +634,14 @@ char* encriptaBm(char letra, TABM* arv, int andar, int pagina) {
             return encriptacao;
         }
     }
-    if (arv->prox) return encriptaBm(letra, arv->prox, andar, pagina + 1);
+    if (arv->prox) return encriptaBM(letra, arv->prox, andar, pagina + 1);
     return "";
 }
 
-char* encriptaFraseBm(char* frase, TABM* arv) {
+char* encriptaFraseBM(char* frase, TABM* arv) {
     char* encriptacao = malloc(strlen(frase) * 5);
     for (int i = 0; i < strlen(frase); i++) {
-        strcat(encriptacao, encriptaBm(frase[i], arv, 0, 0));
+        strcat(encriptacao, encriptaBM(frase[i], arv, 0, 0));
     }
     return encriptacao;
 }
@@ -686,19 +656,9 @@ char* encriptaFraseBm(char* frase, TABM* arv) {
 ////////////////////////////////////////
 ////////////////////////////////////////
 
-char *criaCriptografia(char frase[TAM], int tipoArv, int d){
-    if(tipoArv == 1){
-        TAB *arvB = montaArvoreB(d, frase);
-    }else if(tipoArv == 2){
-        TABM *arvBM = montaArvoreBM(d, frase);
-    }else{
-        return("Tipo de arvore invalida");
-    }
-}
-
 int main() {
-    char alfabeto[28] = "abcdefghijklmnopqrstuvwxyz";
-    char frase[TAM];
+    char frase[TAM] = "teste dessa porahhh jesus";
+    //char frase[TAM];
     int tipoArv;
     int d;
     int tipoInsercao;
@@ -711,37 +671,15 @@ int main() {
         scanf("%[^\n]", frase);
         printf("\n");
 
-        printf("Qual a ordem (d) da arvore selecionada? \n");
-        scanf("%d", &d);
-
-        printf("Com que tipo de arvore voce deseja criptografar a mensagem? \n");
-        printf("(1) Arvore B \n");
-        printf("(2) Arvore B+ \n");
-        printf("(0) Sair \n");
-        scanf("%d", &tipoArv);
-
-        switch(tipoArv){
-            case 1:
-                imprimeArvB(montaArvoreB(d, frase),0);
-                break;
-            case 2:
-                printf("Arvore B+!!! \n\n");
-                break;
-            case 0:
-                continuar = 0;
-                break;
-        }
-
         if(continuar == 0){
             break;
         }
 
-        printf("Com a arvore montada e a mensagem criptografada, o que voce deseja fazer agora? \n");
+        printf("Com as arvores montadas e a mensagem criptografada, o que voce deseja fazer agora? \n");
         printf("(1) Comparar o codigo gerado \n");
-        printf("(2) Buscar informacoes subordinadas \n");
-        printf("(3) Alterar a frequencia de uma letra \n");
-        printf("(4) Buscar todas as letras de uma determinada classificação \n");
-        printf("(5) Remover todas as letras de uma determinada classificação \n");
+        printf("(2) Alterar a frequencia de uma letra \n");
+        printf("(3) Buscar todas as letras de uma determinada classificação \n");
+        printf("(4) Remover todas as letras de uma determinada classificação \n");
         printf("(0) Sair \n");
         scanf("%d", &acao);
 
@@ -768,14 +706,12 @@ int main() {
     int ordem = 2;
     TAB* arv = criaB(ordem);
 
-     for(int i=0;i<26;i++){
-        arv = insereB(arv,  alfabeto[i], ordem);
-        //insereBM(alfabeto[i]);
-        //printf(">>>>  %s \n", *(alfabeto+i));
+    for(int i=0;i<26;i++){
+        arv = insereB(arv,  frase[i], ordem);
     }
 
     imprimeArvB(arv, 0);
-    char* encriptacao = encriptaFrase("the promise of quantum c y z ", arv);
+    char* encriptacao = encriptaFrase(frase, arv);
     printf("Frase: the promise of quantum c y z| encriptado: %s \n", encriptacao);
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
@@ -793,21 +729,21 @@ int main() {
     printf("ta na pagina %d do %d nivel\n\n", x, n2);
 
     TAB *excluida = retiraB(arv, 'h', 0);
-    //imprimeArvB(excluida, 0);
+    imprimeArvB(excluida, 0);
 
     printf("\n\n\n\n");
     printf("---- ARVORE B+ ----\n\n");
 
     TABM* arv2 = criaBM(ordem);
 for(int i=0;i<26;i++){
-    arv2 = insereBM(arv2,  alfabeto[i], ordem);
+    arv2 = insereBM(arv2,  frase[i], ordem);
         //insereBM(alfabeto[i]);
         //printf(">>>>  %s \n", *(alfabeto+i));
     }
     imprimeArvBM(arv2, 0);
     printf("\n");
 
-    char* encriptacaoBm = encriptaFraseBm("the promise of quantum", arv2);
+    char* encriptacaoBm = encriptaFraseBM("the promise of quantum", arv2);
     printf("Frase: the promise of quantum | encriptado: %s \n", encriptacaoBm);
 
     int pBM = paginaBM(arv2, ch);
