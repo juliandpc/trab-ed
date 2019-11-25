@@ -183,7 +183,7 @@ TAB *insereB(TAB *T, char k, int d){
 TAB* removerB(TAB* arv, char ch, int t){
     if(!arv) return arv;
     int i;
-    printf("Removendo %d...\n", ch);
+    printf("Removendo %c...\n", ch);
     for(i = 0; i<arv->nchaves && arv->chave[i] < ch; i++);
     if(i < arv->nchaves && ch == arv->chave[i]){ //CASOS 1, 2A, 2B e 2C
         if(arv->folha){ //CASO 1
@@ -372,13 +372,10 @@ int paiDaChave(TAB* arv, char ch, int andar, int nivelPai){
             i++;
         }
         if(i < aux->nchaves && ch == aux->chave[i]){
-            printf("BLABLABLA %c\n", aux->chave[i]);
             printf("i:  %d\n", i);
 
-            printf("PAGIUNA PAI: %d\n", nivelPai);
             return nivelPai;
         }
-        printf("PAGIUNA PAI: %d\n", i);
         nivelPai = i;
         return paiDaChave(aux->filho[i], ch, andar+1, nivelPai);
     }
@@ -450,7 +447,14 @@ char* encriptaFrase(char* frase, TAB* arv) {
         strcat(encriptacao, encripta(frase[i], arv, 0, arv));
     }
     return encriptacao;
-} 
+}
+
+void retiraCategoriaB(TAB* arv, char* categoria, int ordem){
+    for(int elem=0; elem<strlen(categoria); elem++){
+        imprimeArvB(arv, 0);
+        retiraB(arv, categoria[elem], ordem);
+        }
+}
 
 
 //         /FUNCOES DA ARVORE B        //
@@ -717,27 +721,31 @@ void *limpaFrase(char *frase){
 
 int main() {
     char frase[TAM];
+    char fraseWithSpaces[TAM];
+    char vogais[5] = "aeiou";
+    char consoantes[21] = "bcdfghjklmnpqrstvwxyz";
     int tipoArv;
     int acao;
-    int ordem = 3;
+    int ordem = 2;
 
     int continuar = 1;
     while(continuar){
 
         printf("Digite a frase que deseja criptografar: \n");
         scanf("%[^\n]", frase);
-        printf("\n");
+        strcpy(fraseWithSpaces,frase);
         limpaFrase(frase);
+        printf("\n");
         printf("Com que tipo de arvore voce deseja criptografar a mensagem? \n");
         printf("(1) Arvore B \n");
         printf("(2) Arvore B+ \n");
         printf("(0) Sair \n");
         scanf("%d", &tipoArv);
 
+        TAB* arv = criaB(ordem);
+
         switch(tipoArv){
             case 1:
-                ;
-                TAB* arv = criaB(ordem);
 
                 for(int i=0;i<strlen(frase);i++){
                     arv = insereB(arv,  frase[i], ordem);
@@ -745,7 +753,7 @@ int main() {
 
                 imprimeArvB(arv, 0);
                 char* encriptacao = encriptaFrase(frase, arv);
-                printf("Frase: %s| encriptado: %s \n", frase, encriptacao);
+                printf("Frase: %s| encriptado: %s \n", fraseWithSpaces, encriptacao);
                 break;
             case 2:
                 printf("Arvore B+!!! \n\n");
@@ -766,7 +774,7 @@ int main() {
         printf("(2) Buscar todas as consoantes \n");
         printf("(3) Buscar todas as vogais \n");
         printf("(4) Remover todas as consoantes \n");
-        printf("(3) Remover todas as vogais \n");
+        printf("(5) Remover todas as vogais \n");
         printf("(0) Sair \n");
         scanf("%d", &acao);
 
@@ -774,11 +782,12 @@ int main() {
             case 1:
                 printf("arvore B \n" ); 
                 break;
-
-
-
-
+            case 4:
+            retiraCategoriaB(arv, consoantes, ordem);
+            case 5:
+            retiraCategoriaB(arv, vogais, ordem);        
             case 0:
+            continuar == 0;
                 break;
         }
     }
