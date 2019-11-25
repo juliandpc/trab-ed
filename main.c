@@ -419,7 +419,8 @@ int calculaPagina(TAB* arv, char letra, int pagina, int andarAtual, int andar) {
 char* encripta(char letra, TAB* arv, int andar, TAB* raiz) {
     for (int j = 0; j < arv->nchaves; j++) {
         if (letra == arv->chave[j]) {
-            int pagina = -calculaPagina(raiz, letra, 0, 0, andar);
+            int pagina = calculaPagina(raiz, letra, 0, 0, andar);
+            if (pagina < 0) pagina = -pagina;
             char *encriptacao = encriptaLetra(andar, pagina, j);
             strcat(encriptacao, " ");
             return encriptacao;
