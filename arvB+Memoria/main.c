@@ -539,8 +539,9 @@ void imprime_arvore(TABM *const arv) {
 char* encriptaLetra(int andar, int pagina, int posicao) {
     char* encriptacao = malloc(3*sizeof(char)+1);
     char castado[2];
+    strncpy(encriptacao, "\0", sizeof(char));
     sprintf(castado, "%d", andar);
-    strncpy(encriptacao, castado, sizeof(char)*3);
+    strcat(encriptacao, castado);
     sprintf(castado, "%d", pagina);
     if (andar != 0) strcat(encriptacao, castado);
     sprintf(castado, "%d", posicao);
