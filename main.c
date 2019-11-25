@@ -183,7 +183,6 @@ TAB *insereB(TAB *T, char k, int d){
 TAB* removerB(TAB* arv, char ch, int t){
     if(!arv) return arv;
     int i;
-    printf("Removendo %c...\n", ch);
     for(i = 0; i<arv->nchaves && arv->chave[i] < ch; i++);
     if(i < arv->nchaves && ch == arv->chave[i]){
         if(arv->folha){
@@ -534,12 +533,12 @@ int main() {
                 break;
             case 4:
             for(int elem=0; elem<strlen(consoantes); elem++){
-                imprimeArvB(arv, 0);
-                printf(">>>> %c", consoantes[elem]);
                 retiraB(arv, consoantes[elem], ordem);
             }
             case 5:
-            //retiraCategoriaB(arv, vogais, ordem);        
+            for(int elem=0; elem<strlen(vogais); elem++){
+                retiraB(arv, vogais[elem], ordem);
+            }       
             case 0:
             continuar == 0;
                 break;
