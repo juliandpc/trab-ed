@@ -185,49 +185,44 @@ TAB* removerB(TAB* arv, char ch, int t){
     int i;
     printf("Removendo %c...\n", ch);
     for(i = 0; i<arv->nchaves && arv->chave[i] < ch; i++);
-    if(i < arv->nchaves && ch == arv->chave[i]){ //CASOS 1, 2A, 2B e 2C
-        if(arv->folha){ //CASO 1
-            printf("\nCASO 1\n");
+    if(i < arv->nchaves && ch == arv->chave[i]){
+        if(arv->folha){
             int j;
             for(j=i; j<arv->nchaves-1;j++) arv->chave[j] = arv->chave[j+1];
             arv->nchaves--;
             return arv;
         }
-        if(!arv->folha && arv->filho[i]->nchaves >= t){ //CASO 2A
-            printf("\nCASO 2A\n");
-            TAB *y = arv->filho[i];  //Encontrar o predecessor k' de k na árvore com raiz em y
+        if(!arv->folha && arv->filho[i]->nchaves >= t){ 
+            TAB *y = arv->filho[i]; 
             while(!y->folha) y = y->filho[y->nchaves];
             char temp = y->chave[y->nchaves-1];
             arv->filho[i] = removerB(arv->filho[i], temp, t);
-            //Eliminar recursivamente K e substitua K por K' em x
             arv->chave[i] = temp;
             return arv;
         }
-        if(!arv->folha && arv->filho[i+1]->nchaves >= t){ //CASO 2B
-            printf("\nCASO 2B\n");
-            TAB *y = arv->filho[i+1];  //Encontrar o sucessor k' de k na árvore com raiz em y
+        if(!arv->folha && arv->filho[i+1]->nchaves >= t){
+            TAB *y = arv->filho[i+1];
             while(!y->folha) y = y->filho[0];
             char temp = y->chave[0];
-            y = removerB(arv->filho[i+1], temp, t); //Eliminar recursivamente K e substitua K por K' em x
+            y = removerB(arv->filho[i+1], temp, t);
             arv->chave[i] = temp;
             return arv;
         }
-        if(!arv->folha && arv->filho[i+1]->nchaves == t-1 && arv->filho[i]->nchaves == t-1){ //CASO 2C
-            printf("\nCASO 2C\n");
+        if(!arv->folha && arv->filho[i+1]->nchaves == t-1 && arv->filho[i]->nchaves == t-1){
             TAB *y = arv->filho[i];
             TAB *z = arv->filho[i+1];
-            y->chave[y->nchaves] = ch;          //colocar ch ao final de filho[i]
+            y->chave[y->nchaves] = ch;         
             int j;
-            for(j=0; j<t-1; j++)                //juntar chave[i+1] com chave[i]
+            for(j=0; j<t-1; j++)                
                 y->chave[t+j] = z->chave[j];
-            for(j=0; j<=t; j++)                 //juntar filho[i+1] com filho[i]
+            for(j=0; j<=t; j++)                 
                 y->filho[t+j] = z->filho[j];
             y->nchaves = 2*t-1;
-            for(j=i; j < arv->nchaves-1; j++)   //remover ch de arv
+            for(j=i; j < arv->nchaves-1; j++)   
                 arv->chave[j] = arv->chave[j+1];
-            for(j=i+1; j <= arv->nchaves; j++)  //remover ponteiro para filho[i+1]
+            for(j=i+1; j <= arv->nchaves; j++)  
                 arv->filho[j] = arv->filho[j+1];
-            arv->filho[j] = NULL; //Campello
+            arv->filho[j] = NULL; 
             arv->nchaves--;
             arv->filho[i] = removerB(arv->filho[i], ch, t);
             return arv;
@@ -235,49 +230,45 @@ TAB* removerB(TAB* arv, char ch, int t){
     }
 
     TAB *y = arv->filho[i], *z = NULL;
-    if (y->nchaves == t-1){ //CASOS 3A e 3B
-        if((i < arv->nchaves) && (arv->filho[i+1]->nchaves >=t)){ //CASO 3A
-            printf("\nCASO 3A: i menor que nchaves\n");
+    if (y->nchaves == t-1){ 
+        if((i < arv->nchaves) && (arv->filho[i+1]->nchaves >=t)){ 
             z = arv->filho[i+1];
-            y->chave[t-1] = arv->chave[i];   //dar a y a chave i da arv
+            y->chave[t-1] = arv->chave[i];  
             y->nchaves++;
-            arv->chave[i] = z->chave[0];     //dar a arv uma chave de z
+            arv->chave[i] = z->chave[0];   
             int j;
-            for(j=0; j < z->nchaves-1; j++)  //ajustar chaves de z
+            for(j=0; j < z->nchaves-1; j++) 
                 z->chave[j] = z->chave[j+1];
-            //z->chave[j] = 0; Rosseti
-            y->filho[y->nchaves] = z->filho[0]; //enviar ponteiro menor de z para o novo elemento em y
-            for(j=0; j < z->nchaves; j++)       //ajustar filhos de z
+            y->filho[y->nchaves] = z->filho[0]; 
+            for(j=0; j < z->nchaves; j++)     
                 z->filho[j] = z->filho[j+1];
             z->nchaves--;
             arv->filho[i] = removerB(arv->filho[i], ch, t);
             return arv;
         }
-        if((i > 0) && (!z) && (arv->filho[i-1]->nchaves >=t)){ //CASO 3A
-            printf("\nCASO 3A: i igual a nchaves\n");
+        if((i > 0) && (!z) && (arv->filho[i-1]->nchaves >=t)){
             z = arv->filho[i-1];
             int j;
-            for(j = y->nchaves; j>0; j--)               //encaixar lugar da nova chave
+            for(j = y->nchaves; j>0; j--)             
                 y->chave[j] = y->chave[j-1];
-            for(j = y->nchaves+1; j>0; j--)             //encaixar lugar dos filhos da nova chave
+            for(j = y->nchaves+1; j>0; j--)          
                 y->filho[j] = y->filho[j-1];
-            y->chave[0] = arv->chave[i-1];              //dar a y a chave i da arv
+            y->chave[0] = arv->chave[i-1];            
             y->nchaves++;
-            arv->chave[i-1] = z->chave[z->nchaves-1];   //dar a arv uma chave de z
-            y->filho[0] = z->filho[z->nchaves];         //enviar ponteiro de z para o novo elemento em y
+            arv->chave[i-1] = z->chave[z->nchaves-1];   
+            y->filho[0] = z->filho[z->nchaves];  
             z->nchaves--;
             arv->filho[i] = removerB(y, ch, t);
             return arv;
         }
-        if(!z){ //CASO 3B
+        if(!z){ 
             if(i < arv->nchaves && arv->filho[i+1]->nchaves == t-1){
-                printf("\nCASO 3B: i menor que nchaves\n");
                 z = arv->filho[i+1];
-                y->chave[t-1] = arv->chave[i];     //pegar chave [i] e coloca ao final de filho[i]
+                y->chave[t-1] = arv->chave[i];   
                 y->nchaves++;
                 int j;
                 for(j=0; j < t-1; j++){
-                    y->chave[t+j] = z->chave[j];     //passar filho[i+1] para filho[i]
+                    y->chave[t+j] = z->chave[j];   
                     y->nchaves++;
                 }
                 if(!y->folha){
@@ -285,7 +276,7 @@ TAB* removerB(TAB* arv, char ch, int t){
                         y->filho[t+j] = z->filho[j];
                     }
                 }
-                for(j=i; j < arv->nchaves-1; j++){ //limpar referências de i
+                for(j=i; j < arv->nchaves-1; j++){ 
                     arv->chave[j] = arv->chave[j+1];
                     arv->filho[j+1] = arv->filho[j+2];
                 }
@@ -294,16 +285,15 @@ TAB* removerB(TAB* arv, char ch, int t){
                 return arv;
             }
             if((i > 0) && (arv->filho[i-1]->nchaves == t-1)){
-                printf("\nCASO 3B: i igual a nchaves\n");
                 z = arv->filho[i-1];
                 if(i == arv->nchaves)
-                    z->chave[t-1] = arv->chave[i-1]; //pegar chave[i] e poe ao final de filho[i-1]
+                    z->chave[t-1] = arv->chave[i-1]; 
                 else
-                    z->chave[t-1] = arv->chave[i];   //pegar chave [i] e poe ao final de filho[i-1]
+                    z->chave[t-1] = arv->chave[i]; 
                 z->nchaves++;
                 int j;
                 for(j=0; j < t-1; j++){
-                    z->chave[t+j] = y->chave[j];     //passar filho[i+1] para filho[i]
+                    z->chave[t+j] = y->chave[j];  
                     z->nchaves++;
                 }
                 if(!z->folha){
@@ -363,31 +353,6 @@ int paginaB(TAB* arv, char ch){
 
 }
 
-int paiDaChave(TAB* arv, char ch, int andar, int nivelPai){
-    TAB* aux = arv;
-    if(aux){
-        int i = 0;
-        while(i < aux->nchaves && ch > aux->chave[i]){
-            printf("aux %c\n", aux->chave[i]);
-            i++;
-        }
-        if(i < aux->nchaves && ch == aux->chave[i]){
-            printf("i:  %d\n", i);
-
-            return nivelPai;
-        }
-        nivelPai = i;
-        return paiDaChave(aux->filho[i], ch, andar+1, nivelPai);
-    }
-}
-
-int paginaDaqueleNivelB(TAB* arv, char ch){
-    int paginaPai;
-    paginaPai = paiDaChave(arv, ch, 0, 0);
-    return paginaPai;
-}
-
-
 TAB *montaArvoreB(int d, char frase[TAM]){
     TAB* arv = criaB(d);
     int i = 0;
@@ -435,7 +400,7 @@ char* encripta(char letra, TAB* arv, int andar, TAB* raiz) {
             return encriptacao;
         }
     }
-    if (arv->filho[0] == NULL) return ""; // Não encontrou a letra (tratar esse caso)
+    if (arv->filho[0] == NULL) return "";
     int i = 0;
     while(i < arv->nchaves && letra > arv->chave[i]) i++;
     return encripta(letra, arv->filho[i], andar + 1, raiz);
@@ -449,12 +414,12 @@ char* encriptaFrase(char* frase, TAB* arv) {
     return encriptacao;
 }
 
-void retiraCategoriaB(TAB* arv, char* categoria, int ordem){
-    for(int elem=0; elem<strlen(categoria); elem++){
-        imprimeArvB(arv, 0);
-        retiraB(arv, categoria[elem], ordem);
-        }
-}
+// void retiraCategoriaB(TAB* arv, char* categoria, int ordem){
+//     for(int elem=0; elem<strlen(categoria); elem++){
+//         imprimeArvB(arv, 0);
+//         retiraB(arv, categoria[elem], ordem);
+//         }
+// }
 
 
 //         /FUNCOES DA ARVORE B        //
@@ -467,19 +432,6 @@ void retiraCategoriaB(TAB* arv, char* categoria, int ordem){
 ////////////////////////////////////////
 ////////////////////////////////////////
 /*
-TABM *criaBM(int d){
-    TABM* novo = (TABM*)malloc(sizeof(TABM));
-    novo->nchaves = 0;
-    novo->chave =(char*)malloc(sizeof(char)*((d*2)-1));
-    novo->folha = 1;
-    novo->filho = (TABM**)malloc(sizeof(TABM*)*d*2);
-    novo->prox = NULL;
-    int i;
-    for(i=0; i<(d*2); i++) novo->filho[i] = NULL;
-    return novo;
-}
-
-
 void imprimeArvBM(TABM *a, int andar){
     if(a){
         int i,j;
@@ -490,209 +442,7 @@ void imprimeArvBM(TABM *a, int andar){
         }
         imprimeArvBM(a->filho[i],andar+1);
     }
-}
-
-TABM *buscaBM(TABM *a, char mat){
-    if (!a) return NULL;
-    int i = 0;
-    while ((i < a->nchaves) && (mat > a->chave[i])) i++;
-    if ((i < a->nchaves) && (a->folha) && (mat == a->chave[i])) return a;
-    if (a-> folha) return NULL;
-    if (a->chave[i] == mat) i++;
-    return buscaBM(a->filho[i], mat);
-}
-
-TABM *divisaoBM(TABM *x, int i, TABM* y, int d){
-    TABM *z = criaBM(d);
-    z->folha = y->folha;
-    int j;
-    if(!y->folha){
-        z->nchaves = d-1;
-        for(j=0;j<d-1;j++) z->chave[j] = y->chave[j+d];
-        for(j=0;j<d;j++){
-            z->filho[j] = y->filho[j+d];
-            y->filho[j+d] = NULL;
-        }
-    }
-    else {
-        z->nchaves = d; //z possuir� uma chave a mais que y se for folha
-        for(j=0;j < d;j++) z->chave[j] = y->chave[j+d-1];//Caso em que y � folha, temos q passar a info para o n� da direita
-        y->prox = z;
-    }
-    y->nchaves = d-1;
-    for(j=x->nchaves; j>=i; j--) x->filho[j+1]=x->filho[j];
-    x->filho[i] = z;
-    for(j=x->nchaves; j>=i; j--) x->chave[j] = x->chave[j-1];
-    x->chave[i-1] = y->chave[d-1];
-    x->nchaves++;
-    return x;
-}
-
-
-TABM *insere_nao_completoBM(TABM *x, char mat, int d){
-    int i = x->nchaves-1;
-    if(x->folha){
-        while((i>=0) && (mat < x->chave[i])){
-            x->chave[i+1] = x->chave[i];
-            i--;
-        }
-        x->chave[i+1] = mat;
-        x->nchaves++;
-        return x;
-    }
-    while((i>=0) && (mat < x->chave[i])) i--;
-    i++;
-    if(x->filho[i]->nchaves == ((2*d)-1)){
-        x = divisaoBM(x, (i+1), x->filho[i], d);
-        if(mat > x->chave[i]) i++;
-    }
-    x->filho[i] = insere_nao_completoBM(x->filho[i], mat, d);
-    return x;
-}
-
-TABM *insereBM(TABM *T, char mat, int t){
-    if(buscaBM(T, mat)) return T;
-    if(!T){
-        T=criaBM(t);
-        T->chave[0] = mat;
-        T->nchaves=1;
-        return T;
-    }
-    if(T->nchaves == (2*t)-1){
-        TABM *S = criaBM(t);
-        S->nchaves=0;
-        S->folha = 0;
-        S->filho[0] = T;
-        S = divisaoBM(S,1,T,t);
-        S = insere_nao_completoBM(S, mat, t);
-        return S;
-    }
-    T = insere_nao_completoBM(T, mat, t);
-    return T;
-}
-
-int paginaBM(TABM* arv, char ch){
-    TABM* aux = arv;
-    if(aux){
-        int i = 0;
-        while(i < aux->nchaves && ch >aux->chave[i]){
-            i++;
-        }
-        if(i < aux->nchaves && (aux->folha) && ch == aux->chave[i]){
-            return i;
-        }
-        if (aux->chave[i] == ch){
-            i++;
-        }
-        return paginaBM(aux->filho[i], ch);
-    }
-
-}
-
-int nivelBM(TABM* arv, char ch, int andar){
-    TABM* aux = arv;
-    if(aux){
-        int i = 0;
-        while(i < aux->nchaves && ch >aux->chave[i]){
-            i++;
-        }
-        if(i < aux->nchaves && (aux->folha) && ch == aux->chave[i]){
-            return andar;
-        }
-        if (aux->chave[i] == ch){
-            i++;
-        }
-        return nivelBM(aux->filho[i], ch, andar+1);
-    }
-}
-
-int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
-    TABM* aux = arv;
-    if(aux->folha){
-        int j = 0;
-        while(aux != NULL){
-            printf("esse eh o noh folha numero %d\n", j);
-            j++;
-            aux = aux->prox->folha;
-        }
-        //return j;
-    }else{
-        return paginaDaqueleNivelBM(aux->filho[0], ch, pos);
-    }
-}
-
-
-int paginaDaqueleNivelBM(TABM* arv, char ch, int pos){
-    //TABM* aux = arv;
-    TABM* noPai;
-    if(arv->folha){
-        int i = 0;
-        while((i < arv->nchaves) && (ch > arv->chave[i])){
-            printf("aqui tem q ser o %c\n", arv->chave[i]);
-            i++;
-        }
-        if(i < arv->nchaves && ch == arv->chave[i]){
-            return pos;
-        }
-        if (arv->chave[i] == ch){
-            i++;
-        }
-        if(arv->prox != NULL){
-            return paginaDaqueleNivelBM(arv->prox, ch, pos + 1);
-        }else{
-            return paginaDaqueleNivelBM(noPai->filho[i], ch, pos + 1);
-        }
-    }else{
-        noPai = arv;
-        return paginaDaqueleNivelBM(arv->filho[0], ch, pos);
-    }
-}
-
-
-
-TABM *buscaBM(TABM *a, char mat){
-    if (!a) return NULL;
-    int i = 0;
-    while ((i < a->nchaves) && (mat > a->chave[i])) i++;
-    if ((i < a->nchaves) && (a->folha) && (mat == a->chave[i])) return a;
-    if (a-> folha) return NULL;
-    if (a->chave[i] == mat) i++;
-    return buscaBM(a->filho[i], mat);
-}
-
-
-TABM *montaArvoreBM(int d, char frase[TAM]){
-    TABM* arv = criaBM(d);
-    int i = 0;
-    while(frase[i] != '\0'){
-        arv = insereBM(arv, frase[i], d);
-        i++;
-    }
-
-    return arv;
-}
-
-char* encriptaBM(char letra, TABM* arv, int andar, int pagina) {
-    if (arv->filho[0]) return encriptaBM(letra, arv->filho[0], andar + 1, 0);
-    for (int i = 0; i < arv->nchaves; i++) {
-        if (letra == arv->chave[i]) {
-            char *encriptacao = encriptaLetra(andar, pagina, i);
-            strcat(encriptacao, " ");
-            return encriptacao;
-        }
-    }
-    if (arv->prox) return encriptaBM(letra, arv->prox, andar, pagina + 1);
-    return "";
-}
-
-char* encriptaFraseBM(char* frase, TABM* arv) {
-    char* encriptacao = malloc(strlen(frase) * 5);
-    for (int i = 0; i < strlen(frase); i++) {
-        strcat(encriptacao, encriptaBM(frase[i], arv, 0, 0));
-    }
-    return encriptacao;
-}
-*/
+}*/
 //        /FUNCOES DA ARVORE B+        //
 
 ////////////////////////////////////////
@@ -783,9 +533,13 @@ int main() {
                 printf("arvore B \n" ); 
                 break;
             case 4:
-            retiraCategoriaB(arv, consoantes, ordem);
+            for(int elem=0; elem<strlen(consoantes); elem++){
+                imprimeArvB(arv, 0);
+                printf(">>>> %c", consoantes[elem]);
+                retiraB(arv, consoantes[elem], ordem);
+            }
             case 5:
-            retiraCategoriaB(arv, vogais, ordem);        
+            //retiraCategoriaB(arv, vogais, ordem);        
             case 0:
             continuar == 0;
                 break;
@@ -793,61 +547,3 @@ int main() {
     }
     return 0;
 }
-/*
-    printf("esse eh o d: %d", d);
-    printf("essa eh a arvri: %d", tipoArv);
-
-    printf("%s", frase);
-    TAB* arv = criaB(ordem);
-
-     for(int i=0;i<strlen(frase);i++){
-        arv = insereB(arv,  frase[i], ordem);
-    }
-
-    imprimeArvB(arv, 0);
-    char* encriptacao = encriptaFrase(frase, arv);
-    printf("Frase: %s| encriptado: %s \n", frase, encriptacao);
-*/
-
-    //int numero = pagina(arv, 'a');
-    //printf("esse numero eh: %d\n", numero);
-/*
-    char ch = 'r';
-
-    int n = paginaB(arv, ch);
-    //printf("%d", n);
-    printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, n);
-
-    int n2 = nivelB(arv, ch, 0);
-    printf("o nivel da chave %c eh: %d\n\n", ch, n2);
-
-    int x = paginaDaqueleNivelB(arv, ch);
-    printf("ta na pagina %d do %d nivel\n\n", x, n2);
-
-    TAB *excluida = retiraB(arv, 'h', 0);
-    imprimeArvB(excluida, 0);
-
-    printf("\n\n\n\n");
-    printf("---- ARVORE B+ ----\n\n");
-
-    TABM* arv2 = criaBM(ordem);
-for(int i=0;i<26;i++){
-    arv2 = insereBM(arv2,  frase[i], ordem);
-        //insereBM(alfabeto[i]);
-        //printf(">>>>  %s \n", *(alfabeto+i));
-    }
-    imprimeArvBM(arv2, 0);
-    printf("\n");
-
-    char* encriptacaoBm = encriptaFraseBM("the promise of quantum", arv2);
-    printf("Frase: the promise of quantum | encriptado: %s \n", encriptacaoBm);
-
-    int pBM = paginaBM(arv2, ch);
-    printf("a posicao na pagina da chave >%c< eh: %d\n\n", ch, pBM);
-
-    int nBM = nivelBM(arv2, ch, 0);
-    printf("a chave >%c< esta no nivel %d\n\n", ch, nBM);
-
-    int pdNBM = paginaDaqueleNivelBM(arv2, ch, 0);
-    printf("a chave >%c< esta na pagina %d\n", ch, pdNBM);
-*/
