@@ -640,7 +640,7 @@ int main() {
 
     imprime_arvore(arv);
     printf("\n -- \n");
-    printf("%s", encriptaFraseBM("the promise", arv));
+    printf("%s \n", encriptaFraseBM("the promise", arv));
 
     return 0;
 }
