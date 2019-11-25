@@ -720,8 +720,6 @@ int main() {
     int tipoArv;
     int acao;
     int ordem = 3;
-    char vogal[5] = 'aeiou'
-    char consoante[21] = 'bcdfghjklmnpqrstvwxyz'
 
     int continuar = 1;
     while(continuar){
@@ -774,13 +772,14 @@ int main() {
 
         switch(acao){
             case 1:
-            printf("arvore B \n" ) 
+                printf("arvore B \n" ); 
+                break;
 
 
 
 
-
-            break;
+            case 0:
+                break;
         }
     }
     return 0;
