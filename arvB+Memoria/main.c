@@ -586,7 +586,13 @@ char* encripta(char letra, TABM* arv) {
 }
 
 char* encriptaFraseBM(char* frase, TABM* arv) {
-    printf(encripta(frase[0], arv));
+    char* encriptacao = malloc(strlen(frase) * 5);
+    for (int i = 0; i < strlen(frase); i++) {
+        char* codigo = encripta(frase[i], arv);
+        if (codigo != NULL)
+            strcat(encriptacao, codigo);
+    }
+    return encriptacao;
 }
 
 ////////////////////////////
@@ -634,7 +640,7 @@ int main() {
 
     imprime_arvore(arv);
     printf("\n -- \n");
-    encriptaFraseBM("the promise", arv);
+    printf("%s", encriptaFraseBM("the promise", arv));
 
     return 0;
 }
