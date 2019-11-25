@@ -696,10 +696,8 @@ char *criaCriptografia(char frase[TAM], int tipoArv, int d){
     }
 }
 
-
-
 int main() {
-
+    char alfabeto[28] = "abcdefghijklmnopqrstuvwxyz";
     char frase[TAM];
     int tipoArv;
     int d;
@@ -768,60 +766,17 @@ int main() {
 */
     //printf("%s", frase);
     int ordem = 2;
-
     TAB* arv = criaB(ordem);
 
-
-    /*
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'e', 2);
-    arv = insereB(arv, 's', 2);
-    arv = insereB(arv, 't', 2);
-    arv = insereB(arv, 'a', 2);
-    arv = insereB(arv, 'n', 2);
-    arv = insereB(arv, 'd', 2);
-    arv = insereB(arv, 'o', 2);
-     */
-    //arv = insereB(arv, 'b', 2);
-    //arv = insereB(arv, 'c', 2);
-    //arv = insereB(arv, 'o', 2);
-
-    arv = insereB(arv, 't', ordem);
-    arv = insereB(arv, 'h', ordem);
-    arv = insereB(arv, 'e', ordem);
-    arv = insereB(arv, 'p', ordem);
-    arv = insereB(arv, 'r', ordem);
-    arv = insereB(arv, 'o', ordem);
-    arv = insereB(arv, 'm', ordem);
-    arv = insereB(arv, 'i', ordem);
-    arv = insereB(arv, 's', ordem);
-    arv = insereB(arv, 'e', ordem);
-    arv = insereB(arv, 'o', ordem);
-    arv = insereB(arv, 'f', ordem);
-    arv = insereB(arv, 'q', ordem);
-    arv = insereB(arv, 'u', ordem);
-    arv = insereB(arv, 'a', ordem);
-    arv = insereB(arv, 'n', ordem);
-    arv = insereB(arv, 't', ordem);
-    arv = insereB(arv, 'u', ordem);
-    arv = insereB(arv, 'm', ordem);
-
-    /*
-    arv = insereB(arv, 'x', ordem);
-    arv = insereB(arv, 'w',ordem);
-    arv = insereB(arv, 'c', ordem);
-    arv = insereB(arv, 'b', ordem);
-    arv = insereB(arv, 'd', ordem);
-    arv = insereB(arv, 'k', ordem);
-    arv = insereB(arv, 'l', ordem);
-    arv = insereB(arv, 'r', ordem);
-    arv = insereB(arv, 'z', ordem);
-    arv = insereB(arv, 'v', ordem);
-    */
+     for(int i=0;i<26;i++){
+        arv = insereB(arv,  alfabeto[i], ordem);
+        //insereBM(alfabeto[i]);
+        //printf(">>>>  %s \n", *(alfabeto+i));
+    }
 
     imprimeArvB(arv, 0);
-    char* encriptacao = encriptaFrase("the promise of quantum", arv);
-    printf("Frase: the promise of quantum | encriptado: %s \n", encriptacao);
+    char* encriptacao = encriptaFrase("the promise of quantum c y z ", arv);
+    printf("Frase: the promise of quantum c y z| encriptado: %s \n", encriptacao);
     //int numero = pagina(arv, 'a');
     //printf("esse numero eh: %d\n", numero);
 
@@ -838,33 +793,17 @@ int main() {
     printf("ta na pagina %d do %d nivel\n\n", x, n2);
 
     TAB *excluida = retiraB(arv, 'h', 0);
-    imprimeArvB(excluida, 0);
+    //imprimeArvB(excluida, 0);
 
     printf("\n\n\n\n");
     printf("---- ARVORE B+ ----\n\n");
 
     TABM* arv2 = criaBM(ordem);
-
-    arv2 = insereBM(arv2, 't', ordem);
-    arv2 = insereBM(arv2, 'h', ordem);
-    arv2 = insereBM(arv2, 'e', ordem);
-    arv2 = insereBM(arv2, 'p', ordem);
-    arv2 = insereBM(arv2, 'r', ordem);
-    arv2 = insereBM(arv2, 'o', ordem);
-    arv2 = insereBM(arv2, 'm', ordem);
-    arv2 = insereBM(arv2, 'i', ordem);
-    arv2 = insereBM(arv2, 's', ordem);
-    arv2 = insereBM(arv2, 'e', ordem);
-    arv2 = insereBM(arv2, 'o', ordem);
-    arv2 = insereBM(arv2, 'f', ordem);
-    arv2 = insereBM(arv2, 'q', ordem);
-    arv2 = insereBM(arv2, 'u', ordem);
-    arv2 = insereBM(arv2, 'a', ordem);
-    arv2 = insereBM(arv2, 'n', ordem);
-    arv2 = insereBM(arv2, 't', ordem);
-    arv2 = insereBM(arv2, 'u', ordem);
-    arv2 = insereBM(arv2, 'm', ordem);
-
+for(int i=0;i<26;i++){
+    arv2 = insereBM(arv2,  alfabeto[i], ordem);
+        //insereBM(alfabeto[i]);
+        //printf(">>>>  %s \n", *(alfabeto+i));
+    }
     imprimeArvBM(arv2, 0);
     printf("\n");
 
@@ -879,6 +818,7 @@ int main() {
 
     int pdNBM = paginaDaqueleNivelBM(arv2, ch, 0);
     printf("a chave >%c< esta na pagina %d\n", ch, pdNBM);
+
 
     return 0;
 }
