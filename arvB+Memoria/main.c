@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-const int ordem = 4;
+const int ordem = 3;
 
 int saida_mais_infos = 0;
 
@@ -32,6 +32,7 @@ TABM *inserir_in_pai(TABM *arv, TABM *esq, char ch, TABM *dir);
 TABM *inserir_em_nova_raiz(TABM *esq, char ch, TABM *dir);
 TABM *cria_nova_arvore(char ch, letra *ponteiro);
 TABM *inserir(TABM *arv, char ch, char let);
+int calculaAltura(TABM * const raiz);
 
 TABM *fila = NULL;
 
@@ -524,27 +525,69 @@ void imprime_arvore(TABM *const arv) {
                 printf("\n");
             }
         }
-        if (saida_mais_infos)
-            printf("(%p)", n);
         for (i = 0; i < n->nchaves; i++) {
-            if (saida_mais_infos)
-                printf("%p ", n->ponteiros[i]);
             printf("%c ", n->chave[i]);
         }
         if (!n->folha)
             for (i = 0; i <= n->nchaves; i++)
                 naFila(n->ponteiros[i]);
-        if (saida_mais_infos) {
-            if (n->folha)
-                printf("%p ", n->ponteiros[ordem - 1]);
-            else
-                printf("%p ", n->ponteiros[n->nchaves]);
-        }
         printf("| ");
     }
     printf("\n");
 }
 
+char* encriptaLetra(int andar, int pagina, int posicao) {
+    char* encriptacao = malloc(5);
+    char castado[12];
+    sprintf(castado, "%d", andar);
+    strcat(encriptacao, castado);
+    sprintf(castado, "%d", pagina);
+    if (andar != 0) strcat(encriptacao, castado);
+    sprintf(castado, "%d", posicao);
+    strcat(encriptacao, castado);
+    return encriptacao;
+}
+
+int calculaAltura(TABM * const raiz) {
+	int h = 0;
+	TABM * c = raiz;
+	while (!c->folha) {
+		c = c->ponteiros[0];
+		h++;
+	}
+	return h;
+}
+
+char* encripta(char letra, TABM* arv) {
+    int andar = calculaAltura(arv);
+    TABM * n = NULL;
+    int i;
+    int pagina = 0;
+    fila = NULL;
+    naFila(arv);
+    while (fila != NULL) {
+        n = tiraFila();
+        if (n->folha) {
+            for (i = 0; i < n->nchaves; i++) {
+                if (letra == n->chave[i]) {
+                    char* codigo = encriptaLetra(andar, pagina, i);
+                    strcat(codigo, " ");
+                    return codigo;
+                }
+            }
+            
+            pagina++;
+        }
+
+        if (!n->folha)
+            for (i = 0; i <= n->nchaves; i++)
+                naFila(n->ponteiros[i]);
+    }
+}
+
+char* encriptaFraseBM(char* frase, TABM* arv) {
+    printf(encripta(frase[0], arv));
+}
 
 ////////////////////////////
 
@@ -590,6 +633,8 @@ int main() {
     */
 
     imprime_arvore(arv);
+    printf("\n -- \n");
+    encriptaFraseBM("the promise", arv);
 
     return 0;
 }
