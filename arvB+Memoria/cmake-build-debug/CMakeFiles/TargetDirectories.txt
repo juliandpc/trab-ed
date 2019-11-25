@@ -1,0 +1,3 @@
+C:/Users/Gabriel/CLionProjects/arvB+Memoria/cmake-build-debug/CMakeFiles/arvB_Memoria.dir
+C:/Users/Gabriel/CLionProjects/arvB+Memoria/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Gabriel/CLionProjects/arvB+Memoria/cmake-build-debug/CMakeFiles/rebuild_cache.dir
